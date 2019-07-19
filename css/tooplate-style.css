@@ -732,7 +732,7 @@ a.active:after {
 }
 
 .banner .left-content {
-  background-color: #517df0;
+  background-color: #cbd4f0;
   height: 800px;
   display: block;
 }
@@ -759,11 +759,11 @@ a.active:after {
   height: 800px;
   width: 100%;
   display: block;
-  background: #517df0; /* Old browsers */
-  background: -moz-linear-gradient(left, #517df0 50%, #eeeeee 50%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left, #517df0 50%,#eeeeee 50%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right, #517df0 50%,#eeeeee 50%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#517df0', endColorstr='#eeeeee',GradientType=1 ); /* IE6-9 */
+  background: #cbd4f0; /* Old browsers */
+  background: -moz-linear-gradient(left, #cbd4f0 50%, #eeeeee 50%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, #cbd4f0 50%,#eeeeee 50%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, #cbd4f0 50%,#eeeeee 50%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cbd4f0', endColorstr='#eeeeee',GradientType=1 ); /* IE6-9 */
   }
 
 .banner .center-image .inside-content {
@@ -1107,11 +1107,11 @@ footer .footer-item ul.social-icons li a:hover {
 
   .banner .center-image {
     height: 50vh;
-    background: #517df0; /* Old browsers */
-    background: -moz-linear-gradient(top, #517df0 50%, #eeeeee 50%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, #517df0 50%,#eeeeee 50%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, #517df0 50%,#eeeeee 50%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#517df0', endColorstr='#eeeeee',GradientType=1 ); /* IE6-9 */
+    background: #cbd4f0; /* Old browsers */
+    background: -moz-linear-gradient(top, #cbd4f0 50%, #eeeeee 50%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #cbd4f0 50%,#eeeeee 50%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #cbd4f0 50%,#eeeeee 50%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cbd4f0', endColorstr='#eeeeee',GradientType=1 ); /* IE6-9 */
   }
 
   .banner .right-content {
