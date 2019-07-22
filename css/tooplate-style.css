@@ -663,7 +663,7 @@ a.active:after {
   max-width: 100%;
   width: 100%;
   color: #7a7a7a;
-  outline: none!important
+  outline: none!important;
   background-color: #fff;
 }
 
@@ -684,7 +684,7 @@ a.active:after {
   width: 100%;
   margin-bottom: 30px;
   color: #7a7a7a;
-  outline: none!important
+  outline: none!important;
   background-color: #fff;
 }
 
