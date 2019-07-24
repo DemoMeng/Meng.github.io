@@ -1,68 +1,36 @@
 SELECT
-	building.id,
-	building.NAME,
-	building.handover_date,
-	building.gains,
-	building.rental_income,
-	building.main_pic,
+	user_voice.id,
+	user_voice.NAME,
+	user_voice.name_en AS nameEn,
+	user_voice.photo,
+	user_voice.city,
+	user_voice.city_en AS cityEn,
+	user_voice.profession,
+	user_voice.profession_en professionEn,
+	user_voice.score,
+	user_voice.score_desc AS scoreDesc,
+	user_voice.score_desc_en AS scoreDescEn,
+	user_voice.building_id AS buildingId,
+	user_voice.serve_type AS serveType,
+	user_voice.house_area AS houseArea,
+	user_voice.house_price AS housePrice,
+	user_voice.hide_head AS hideHead,
+	user_voice.remarks,
+	user_voice.info_type AS infoType,
+	building.`name` AS buildName,
 	building.countries,
-	building.city,
-	building.region,
-	building.recommend,
-	building.build_status,
-	building.property_type,
-	building.total_number,
-	building.payment,
-	building.address,
-	building.longitude,
-	building.latitude,
-	building.label,
-	DATA.id data_type_id,
-	DATA.biz_type,
-	DATA.data_value 
+	building.city AS buildCity,
+	building.id AS buildId,
+	building.region buildRegion,
+	building.main_pic AS mainPic,
+	merchant.logo,
+	merchant.id 
 FROM
-	building
-	LEFT JOIN data_type DATA ON building.id = DATA.house_id 
-	AND DATA.module = "BUILDING" 
-	AND DATA.biz_type = "HOUSING_FEATURE" 
+	user_voice
+	LEFT JOIN building ON user_voice.building_id = building.id
+	LEFT JOIN merchant ON merchant.id = user_voice.description 
 WHERE
-	building.is_delete = 0 
-	AND (
-	building.city = ( SELECT area_code FROM th_area WHERE area_name ='Soi 9' AND hierarchy = 2 ) 
-	OR building.NAME LIKE CONCAT( '%', 'Soi 9', '%' ) 
-	OR building.address LIKE CONCAT( '%', 'Soi 9', '%' ) 
-	) 
-	AND building.city = 'Chiengmai' 
-	AND building.payment = 'PAYMET_1' 
-	AND building.build_status = 'BUILDING_STATUS_1'
-	AND EXISTS (
-SELECT DISTINCT
-	( building_id ) 
-FROM
-	(
-SELECT
-	building_id,
-CASE
-	building.countries 
-	WHEN "UnitedKingdom" THEN
-	house_type.price / '0.1168' 
-	WHEN "Thailand" THEN
-	house_type.price / '4.4907' ELSE house_type.price 
-	END minprice 
-FROM
-	house_type
-	LEFT JOIN building ON building.id = house_type.building_id 
-WHERE
-	house_type.is_delete = 0 
-	) tmps 
-WHERE
-	minprice >='500000' 
-	AND minprice <= '800000' 
-	AND building_id = building.id 
-	) 
-	AND EXISTS ( SELECT id FROM data_type WHERE data_value IN ('HOUSING_FEATURE_31','HOUSING_FEATURE_6') AND module = 'BUILDING' AND house_id = building.id ) 
-GROUP BY
-	building.id 
-ORDER BY
-	( SELECT SUM( house_total ) > SUM( house_sold ) sell FROM house_type WHERE is_delete = 0 AND house_type.building_id = building.id ) DESC,
-	rental_income DESC
+	user_voice.is_delete = 0 
+	AND user_voice.info_type =1 
+	AND user_voice.STATUS = 0 
+	AND user_voice.serve_type = 2
