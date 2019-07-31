@@ -1,36 +1,17 @@
-SELECT
-	user_voice.id,
-	user_voice.NAME,
-	user_voice.name_en AS nameEn,
-	user_voice.photo,
-	user_voice.city,
-	user_voice.city_en AS cityEn,
-	user_voice.profession,
-	user_voice.profession_en professionEn,
-	user_voice.score,
-	user_voice.score_desc AS scoreDesc,
-	user_voice.score_desc_en AS scoreDescEn,
-	user_voice.building_id AS buildingId,
-	user_voice.serve_type AS serveType,
-	user_voice.house_area AS houseArea,
-	user_voice.house_price AS housePrice,
-	user_voice.hide_head AS hideHead,
-	user_voice.remarks,
-	user_voice.info_type AS infoType,
-	building.`name` AS buildName,
-	building.countries,
-	building.city AS buildCity,
-	building.id AS buildId,
-	building.region buildRegion,
-	building.main_pic AS mainPic,
-	merchant.logo,
-	merchant.id 
-FROM
-	user_voice
-	LEFT JOIN building ON user_voice.building_id = building.id
-	LEFT JOIN merchant ON merchant.id = user_voice.description 
-WHERE
-	user_voice.is_delete = 0 
-	AND user_voice.info_type =1 
-	AND user_voice.STATUS = 0 
-	AND user_voice.serve_type = 2
+SELECT dh.*
+  	      FROM house_relation hs
+ 		 INNER JOIN dz_house dh ON dh.id = hs.`building_id` AND dh.`is_delete` = 0 AND dh.status = 'normal'
+         INNER JOIN house_recommend dr ON dr.`id` = hs.`category_id` AND dr.`type_code` = 'RECOMMEND_TYPE_8'
+         WHERE hs.`is_delete` = 0
+         GROUP BY dh.`id`
+         ORDER BY hs.`create_time`,hs.`sort` DESC
+		 
+		 
+		 
+
+		 
+select
+    id,data_id,type,data_type,data,is_delete,create_time,update_time
+    from dz_house_file
+    where data_id = #{id,jdbcType=BIGINT}
+    and is_delete = 0 order by data_type desc
