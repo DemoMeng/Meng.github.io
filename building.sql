@@ -144,6 +144,51 @@ WHERE
 select * from building where name like '%圣地湾-La Santir%'
 select * from merchant m where m.name ='南洋房产' and is_delete = 0
 select * from merchant where id = 4 and is_delete = 0
+
+select * from house_type where building_id = 198
+
+insert into house_type (
+  `title`,
+  `main_pic`,
+  `bedroom`,
+  `saloon`,
+  `toilet`,
+  `balcony`,
+  `area`,
+  `price`,
+  `inner_assort`,
+  `family_reading_en`,
+  `family_reading`,
+  `house_total`,
+  `house_sold`,
+  `building_id`,
+  `description`,
+  `sort`,
+  `is_delete`,
+  `thumb_pic`,
+  `land_rent`)
+	select `title`,
+  `main_pic`,
+  `bedroom`,
+  `saloon`,
+  `toilet`,
+  `balcony`,
+  `area`,
+  `price`,
+  `inner_assort`,
+  `family_reading_en`,
+  `family_reading`,
+  `house_total`,
+  `house_sold`,
+  `building_id`,
+  `description`,
+  `sort`,
+  `is_delete`,
+  `thumb_pic`,
+  `land_rent` from house_type where building_id = 198 and is_delete = 0 
+
+select * from house_type where building_id = 198
+
 	
 INSERT into merge_house_merchant 
 	(`house_id`,
@@ -159,3 +204,6 @@ select * from building where id = "345"
 
 select * from merge_house_merchant where house_id = '345'
 	
+
+	
+
