@@ -1,0 +1,45 @@
+select building.id,
+      building.name,
+      building.handover_date,
+      building.gains,
+      building.rental_income,
+      building.main_pic,
+      building.countries,
+      building.city,
+      building.region,
+      building.recommend,
+      building.build_status,
+      building.property_type,
+      building.total_number,
+      building.payment,
+      building.address,
+      building.longitude,
+      building.latitude,
+      building.label
+from building building where building.is_delete=0 
+<if test="keyword == null or keyword == ''">
+	and building.countries="Thailand" 
+</if>
+<if test="sortStr=='totalPriceUp'">
+  LEFT JOIN
+  (SELECT building_id,MIN(price) as minprice FROM house_type WHERE is_delete=0 GROUP BY building_id ORDER BY minprice) tmp
+  ON tmp.building_id=building.id
+</if>
+<if test="sortStr=='totalPriceDown'">
+  LEFT JOIN
+  (SELECT building_id,MAX(price) as minprice FROM house_type WHERE is_delete=0 GROUP BY building_id ORDER BY minprice desc) tmp
+  ON tmp.building_id=building.id
+</if>
+<if test="sortStr=='priceUp'">
+  LEFT JOIN
+  (SELECT building_id,MIN(price/area) as minprice FROM house_type WHERE is_delete=0 GROUP BY building_id ORDER BY price/area) tmp
+  ON tmp.building_id=building.id
+</if>
+<if test="sortStr=='priceDown'">
+  LEFT JOIN
+  (SELECT building_id,MAX(price/area) as minprice FROM house_type WHERE is_delete=0 GROUP BY building_id ORDER BY price/area desc) tmp
+  ON tmp.building_id=building.id
+</if>
+
+
+
