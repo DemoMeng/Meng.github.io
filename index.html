@@ -63,6 +63,8 @@ https://www.tooplate.com/view/2112-brunch
                         <h4>蒙大拿啊顶顶顶顶</h4>
                         <div class="white-border-button">
                             <a href="#">查看更多</a>
+                            <button id="login-btn">用户登录</button>
+                            <button id="load-data-btn">加载数据</button>
                         </div>
                     </div>
                 </div>
@@ -338,6 +340,45 @@ https://www.tooplate.com/view/2112-brunch
     <script src="js/datepicker.js"></script>
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
+
+    <script>
+        $(function(){
+
+            //用户登录
+            $("#login-btn").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:4444/mqz/login/login",
+                    data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+                    dataType: "json",
+                    success: function(data){
+                        console.log(data);
+                    }
+                });
+            });
+
+            //获取数据
+            $('#load-data-btn').click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:4444/mqz/goods/goods/page",
+                    data: {size:10, current:1},
+                    dataType: "json",
+                    success: function(data){
+                        console.log(data);
+                        // $('#resText').empty();   //清空resText里面的所有内容
+                        // var html = '';
+                        // $.each(data, function(commentIndex, comment){
+                        //     html += '<div class="comment"><h6>' + comment['username']
+                        //         + ':</h6><p class="para"' + comment['content']
+                        //         + '</p></div>';
+                        // });
+                        // $('#resText').html(html);
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>
