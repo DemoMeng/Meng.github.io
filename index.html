@@ -341,22 +341,63 @@ https://www.tooplate.com/view/2112-brunch
     <script src="js/plugins.js"></script>
     <script src="js/main.js"></script>
 
+
+<!--    <script>-->
+<!--        var script = document.createElement('script');-->
+<!--        script.type = 'text/javascript';-->
+<!--        // 传参一个回调函数名给后端，方便后端返回时执行这个在前端定义的回调函数-->
+<!--        script.src = 'http://localhost:4444/mqz/login/login?userName=mengqizhang&password=meng0304&isRemember=false';-->
+<!--        document.head.appendChild(script);-->
+<!--        // 回调执行函数-->
+<!--        function handleCallback(res) {-->
+<!--            console.log(res);-->
+<!--            //alert(JSON.stringify(res));-->
+<!--        }-->
+<!--    </script>-->
+
     <script>
         $(function(){
 
-            //用户登录
-            $("#login-btn").click(function () {
-                $.ajax({
-                    type: "POST",
-                    url: "http://localhost:4444/mqz/login/login",
-                    data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
-                    dataType: "json",
-                    success: function(data){
-                        console.log(data);
-                    }
-                });
+            var url = "http://localhost:4444/mqz/login/login?callback=?&userName=mengqizhang&password=meng0304&isRemember=false";
+            $.ajax({
+                type:'GET',
+                url : url,
+                jsonpCallback: 'jsonCallback',
+                contentType: "application/json",
+                dataType:"jsonp",
+                success:function(json){
+                    console.log(json);
+                    //alert(json);
+                }
             });
 
+            // function handleCallback(res) {
+            //     alert(JSON.stringify(res));
+            // }
+            //
+            // $.ajax({
+            //     url: 'http://localhost:4444/mqz/login/login',
+            //     type: 'get',
+            //     data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+            //     dataType: 'jsonp',  // 请求方式为jsonp
+            //     jsonpCallback: "handleCallback",    // 自定义回调函数名
+            // });
+
+
+
+            //用户登录
+            // $("#login-btn").click(function () {
+            //     $.ajax({
+            //         type: "POST",
+            //         url: "http://localhost:4444/mqz/login/login",
+            //         data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+            //         dataType: "json",
+            //         success: function(data){
+            //             console.log(data);
+            //         }
+            //     });
+            // });
+            return null;
             //获取数据
             $('#load-data-btn').click(function(){
                 $.ajax({
