@@ -1,29 +1,29 @@
 SELECT
-	a.`id` AS `id`,
-	
-	(SELECT dic_name FROM dictionary WHERE dic_code = a.type AND is_delete = 0) AS `type`,
-	
-	a.`title` AS `title`,
-	
-	REMOVE_LABEL(a.`content`) AS `content`,
-	
-	CONCAT(
-		'{',
-			'"pageView":', '"', IFNULL( a.basic_reading, 0 ) + IFNULL( a.readjust_reading, 0 ) ,'", ',
-			'"collection":', '"', IFNULL( a.basic_collection, 0 ) + IFNULL( a.readjust_collection, 0 ) ,'"'
-		'}'
-	) AS ignore_content,
-	
-	a.article_abstract AS description,
-	
-	a.keyword AS keyword,
-	
-	a.create_time AS create_time,
-	
-	a.update_time AS update_time
-	
-FROM article AS a
-
-WHERE a.is_delete = 0
-	
-ORDER BY a.id
+			a.`id` AS `id`,
+			
+			(SELECT dic_name FROM dictionary WHERE dic_code = a.type AND is_delete = 0) AS `type`,
+			
+			a.`title` AS `title`,
+			
+			REMOVE_LABEL(a.`content`) AS `content`,
+			
+			CONCAT(
+				'{',
+					'"pageView":', '"', IFNULL( a.basic_reading, 0 ) + IFNULL( a.readjust_reading, 0 ) ,'", ',
+					'"collection":', '"', IFNULL( a.basic_collection, 0 ) + IFNULL( a.readjust_collection, 0 ) ,'"'
+				'}'
+			) AS ignore_content,
+			
+			a.article_abstract AS description,
+			
+			a.keyword AS keyword,
+			
+			a.create_time AS create_time,
+			
+			a.update_time AS update_time
+			
+		FROM article AS a
+		
+		WHERE a.is_delete = 0
+			
+		ORDER BY a.id
