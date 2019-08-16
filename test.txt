@@ -1,1 +1,29 @@
-SELECT demand.id, demand.area, demand.budget, demand.property_type propertyType, demand.purchase_purpose purchasePurpose, demand.client, demand.mobile_home mobileHome, demand.mobile, demand.wechat, demand.add_demand addDemand, broker.`name` brokerName, broker.mobile brokerMobile, merge_demand_broker.`status`, merge_demand_merchant.`status` merchantStatus, merge_demand_merchant.source, demand.visit_time visitTime, merge_demand_merchant.create_time createTime, merge_demand_merchant.description from demand LEFT JOIN merge_demand_broker ON merge_demand_broker.demand_id=demand.id LEFT JOIN merge_demand_merchant ON merge_demand_merchant.demand_id=demand.id LEFT JOIN broker ON merge_demand_broker.broker_id= broker.id WHERE demand.is_delete=0 AND merge_demand_merchant.`status` IN('PROGRESS_STATUS_0','PROGRESS_STATUS_1','PROGRESS_STATUS_7') AND merge_demand_merchant.merchant_id=? ORDER BY createTime DESC LIMIT ?, ?
+SELECT
+	a.`id` AS `id`,
+	
+	(SELECT dic_name FROM dictionary WHERE dic_code = a.type AND is_delete = 0) AS `type`,
+	
+	a.`title` AS `title`,
+	
+	REMOVE_LABEL(a.`content`) AS `content`,
+	
+	CONCAT(
+		'{',
+			'"pageView":', '"', IFNULL( a.basic_reading, 0 ) + IFNULL( a.readjust_reading, 0 ) ,'", ',
+			'"collection":', '"', IFNULL( a.basic_collection, 0 ) + IFNULL( a.readjust_collection, 0 ) ,'"'
+		'}'
+	) AS ignore_content,
+	
+	a.article_abstract AS description,
+	
+	a.keyword AS keyword,
+	
+	a.create_time AS create_time,
+	
+	a.update_time AS update_time
+	
+FROM article AS a
+
+WHERE a.is_delete = 0
+	
+ORDER BY a.id
