@@ -1,29 +1,42 @@
 SELECT
-			a.`id` AS `id`,
-			
-			(SELECT dic_name FROM dictionary WHERE dic_code = a.type AND is_delete = 0) AS `type`,
-			
-			a.`title` AS `title`,
-			
-			REMOVE_LABEL(a.`content`) AS `content`,
-			
-			CONCAT(
-				'{',
-					'"pageView":', '"', IFNULL( a.basic_reading, 0 ) + IFNULL( a.readjust_reading, 0 ) ,'", ',
-					'"collection":', '"', IFNULL( a.basic_collection, 0 ) + IFNULL( a.readjust_collection, 0 ) ,'"'
-				'}'
-			) AS ignore_content,
-			
-			a.article_abstract AS description,
-			
-			a.keyword AS keyword,
-			
-			a.create_time AS create_time,
-			
-			a.update_time AS update_time
-			
-		FROM article AS a
-		
-		WHERE a.is_delete = 0
-			
-		ORDER BY a.id
+            count( ra.id )
+        FROM
+        ( SELECT id FROM resold_apartment WHERE del_flag = 0 AND audit_status = 'pass' AND user_id = #{id} GROUP BY city ) ra
+	
+	
+	
+	
+	SELECT
+            count(id)
+        FROM
+            resold_apartment
+        WHERE del_flag = 0
+        AND user_id = #{id}
+        AND sell_status = #{status}
+	
+	
+	
+	
+	
+	
+	SELECT
+            count(id)
+        FROM
+            resold_apartment
+        WHERE del_flag = 0
+        AND user_id = #{id}
+        AND sell_status = #{status}
+	
+	
+	
+	
+	SELECT
+            u.id AS user_id,
+            u.nick_name AS user_name,
+            u.photo AS user_photo,
+            im.identifier AS identifier,
+            im.user_sig AS user_sig
+        FROM
+            user u
+        LEFT JOIN im_user im ON u.id = im.user_id
+            WHERE u.is_delete = 0 AND u.id = #{userId}
