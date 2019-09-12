@@ -1,10 +1,15 @@
 SELECT
             count(t1.id)
-        FROM resold_apartment t1
+        FROM
+        resold_apartment t1
         INNER JOIN ra_attribute t2 ON t1.id = t2.ra_id AND t2.del_flag = 0
-        LEFT JOIN im_user im ON im.user_id = t1.user_id
-        LEFT JOIN ra_build_relevance t3 ON t3.ra_id = t1.id
-        LEFT JOIN data_analysis t4 ON t4.data_type = 'SECOND_HOUSE' AND t1.id = t4.data_id
-        LEFT JOIN th_area ta ON ta.area_code = t1.city
-        LEFT JOIN cn_area ca ON ca.area_code = t1.city
-        WHERE t3.build_id = 332
+        LEFT JOIN user u ON t1.user_id = u.id
+        LEFT JOIN merchant m ON t1.user_id = m.user_id 
+				LEFT JOIN im_user t3 ON t1.user_id = t3.user_id
+        LEFT JOIN ra_build_relevance t4 ON t1.id = t4.ra_id
+				LEFT JOIN building t5 ON t4.build_id = t5.id AND t5.is_delete != 1
+				LEFT JOIN cn_area c1 ON t1.city = c1.area_code AND c1.hierarchy = 1
+				LEFT JOIN th_area c2 ON t1.city = c2.area_code AND c2.hierarchy = 2
+				LEFT JOIN data_analysis t8 ON t8.data_type = 'SECOND_HOUSE' AND t1.id = t8.data_id
+        WHERE t1.del_flag = 0 AND t5.id = 332 AND t1.release_status = 'normal'
+            
