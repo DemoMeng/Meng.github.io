@@ -1,42 +1,10 @@
 SELECT
-            count( ra.id )
-        FROM
-        ( SELECT id FROM resold_apartment WHERE del_flag = 0 AND audit_status = 'pass' AND user_id = #{id} GROUP BY city ) ra
-	
-	
-	
-	
-	SELECT
-            count(id)
-        FROM
-            resold_apartment
-        WHERE del_flag = 0
-        AND user_id = #{id}
-        AND sell_status = #{status}
-	
-	
-	
-	
-	
-	
-	SELECT
-            count(id)
-        FROM
-            resold_apartment
-        WHERE del_flag = 0
-        AND user_id = #{id}
-        AND sell_status = #{status}
-	
-	
-	
-	
-	SELECT
-            u.id AS user_id,
-            u.nick_name AS user_name,
-            u.photo AS user_photo,
-            im.identifier AS identifier,
-            im.user_sig AS user_sig
-        FROM
-            user u
-        LEFT JOIN im_user im ON u.id = im.user_id
-            WHERE u.is_delete = 0 AND u.id = #{userId}
+            count(t1.id)
+        FROM resold_apartment t1
+        INNER JOIN ra_attribute t2 ON t1.id = t2.ra_id AND t2.del_flag = 0
+        LEFT JOIN im_user im ON im.user_id = t1.user_id
+        LEFT JOIN ra_build_relevance t3 ON t3.ra_id = t1.id
+        LEFT JOIN data_analysis t4 ON t4.data_type = 'SECOND_HOUSE' AND t1.id = t4.data_id
+        LEFT JOIN th_area ta ON ta.area_code = t1.city
+        LEFT JOIN cn_area ca ON ca.area_code = t1.city
+        WHERE t3.build_id = 332
