@@ -1,6 +1,10 @@
 .date {
 	float: right;
 	background-image: url(../img/icon/date.png);
+
+
 }
 
-.
+.hr-all{
+	height:1px;border:none;border-top:3px solid #e1e3e8;
+}
