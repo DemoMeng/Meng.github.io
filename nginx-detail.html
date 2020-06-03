@@ -68,7 +68,7 @@
 					<strong>a.反向代理：</strong>
 				</p><br>
 				<p style="font-size: 19px;">
-					&nbsp;&nbsp;&nbsp;&nbsp; 在本地使用 www.glmapper1.com 的域名去访问www.taobao.com。那么这个时候我们就可以通过nginx去实现。
+					; 在本地使用 www.glmapper1.com 的域名去访问www.taobao.com。那么这个时候我们就可以通过nginx去实现。
 				</p><br>
 				
 				<p style="font-size: 19px;">
@@ -77,7 +77,7 @@
 					</strong>
 				</p><br>
 				<p style="font-size: 19px;">
-					&nbsp;&nbsp;&nbsp;&nbsp;就是说应用部署在不同的服务器上，但是通过统一的域名进入，nginx则对请求进行分发
+					;就是说应用部署在不同的服务器上，但是通过统一的域名进入，nginx则对请求进行分发
 					将请求分发到不同的服务器上去处理，这样就可以有效的减轻了单台服务器的压力。
 				</p><br>
 				<p style="font-size: 19px;">
@@ -89,9 +89,10 @@
 					</strong>
 				</p>
 				<p style="font-size: 19px;">
-					&nbsp;&nbsp;&nbsp;&nbsp;同源：URL由协议、域名、端口和路径组成，如果两个URL的协议、域名和端口相同，则表示他们同源。
-					     浏览器的同源策略：浏览器的同源策略，限制了来自不同源的"document"或脚本，对当前"document"读取或设置某些属性。从一个域上加载的脚本不允许访问另外一个域的文档属性。
+					;
+					同源：URL由协议、域名、端口和路径组成，如果两个URL的协议、域名和端口相同，则表示他们同源。浏览器的同源策略：浏览器的同源策略，限制了来自不同源的"document"或脚本，对当前"document"读取或设置某些属性。从一个域上加载的脚本不允许访问另外一个域的文档属性。
 					     因为nginx和tomcat不能共用同一端口,url一样，端口不同，这样就会有跨域问题。
+						
 				</p><br><br>
 				
 				
@@ -101,11 +102,13 @@
 					<strong>配置文件主要由四部分组成：：</strong>
 				</p><br>
 				<p style="font-size: 19px;">
-					&nbsp;&nbsp;&nbsp;&nbsp; main(全区设置)<br>
-					&nbsp;&nbsp;&nbsp;&nbsp; server(主机配置)<br>
-					&nbsp;&nbsp;&nbsp;&nbsp; http(控制着nginx http处理的所有核心特性)<br>
-					&nbsp;&nbsp;&nbsp;&nbsp; location(URL匹配特定位置设置)。<br>
-					&nbsp;&nbsp;&nbsp;&nbsp; upstream(负载均衡服务器设置)<br>
+					 <xmp>
+	 main(全区设置)
+	 server(主机配置)
+	 http(控制着nginx http处理的所有核心特性)
+	 location(URL匹配特定位置设置)。
+	 upstream(负载均衡服务器设置)
+					 </xmp>
 				</p><br>
 				
 				<p style="font-size: 19px;">
@@ -115,150 +118,58 @@
 				</p><br>
 				<p style="font-size: 19px;">
 					<strong>
-					&nbsp;&nbsp;&nbsp;&nbsp;#Nginx的worker进程运行用户以及用户组<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#user  nobody;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#Nginx开启的进程数<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;worker_processes  1;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#定义全局错误日志定义类型，[debug|info|notice|warn|crit]<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#error_log  logs/error.log;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#error_log  logs/error.log  notice;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#error_log  logs/error.log  info;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#指定进程ID存储文件位置<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#pid   &nbsp;&nbsp;&nbsp;   logs/nginx.pid;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;#事件配置<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;events {<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#use [ kqueue | rtsig | epoll | /dev/poll | select | poll ];<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#epoll模型是Linux内核中的高性能网络I/O模型，如果在mac上面，就用kqueue模型。<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use kqueue;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#每个进程可以处理的最大连接数，理论上每台nginx服务器的最大连接数为worker_processes*worker_connections。<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;worker_connections  1024;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-					&nbsp;&nbsp;&nbsp;&nbsp;#http参数<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;http {<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#文件扩展名与文件类型映射表<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;include       mime.types;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#默认文件类型<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default_type  application/octet-stream;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#日志相关定义<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#                  '$status $body_bytes_sent "$http_referer" '<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#                  '"$http_user_agent" "$http_x_forwarded_for"';<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#连接日志的路径，指定的日志格式放在最后。<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#access_log  logs/access.log  main;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#开启高效传输模式<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sendfile        on;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#防止网络阻塞<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#tcp_nopush     on;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#客户端连接超时时间，单位是秒<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#keepalive_timeout  0;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keepalive_timeout  65;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#开启gzip压缩输出<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#gzip  on;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#虚拟主机基本设置<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server {<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#监听的端口号<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listen       80;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#访问域名<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server_name  localhost;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#编码格式，如果网页格式与当前配置的不同的话将会被自动转码<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#charset koi8-r;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#虚拟主机访问日志定义<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#access_log  logs/host.access.log  main;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#对URL进行匹配<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;location / {<br>
-					                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#访问路径，可相对也可绝对路径<br>
-					                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root   html;<br>
-					                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#首页文件，匹配顺序按照配置顺序匹配<br>
-					                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index  index.html index.htm;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#错误信息返回页面<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#error_page  404              /404.html;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;# redirect server error pages to the static page /50x.html<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;error_page   500 502 503 504  /50x.html;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;location = /50x.html {<br>
-					                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root   html;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#访问URL以.php结尾则自动转交给127.0.0.1<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;# proxy the PHP scripts to Apache listening on 127.0.0.1:80<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#location ~ \.php$ {<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    proxy_pass   http://127.0.0.1;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#}<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#php脚本请求全部转发给FastCGI处理<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#location ~ \.php$ {<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    root           html;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    fastcgi_pass   127.0.0.1:9000;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    fastcgi_index  index.php;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    include        fastcgi_params;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#}<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#禁止访问.ht页面<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;# deny access to .htaccess files, if Apache's document root<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;# concurs with nginx's one<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#location ~ /\.ht {<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    deny  all;<br>
-					            &nbsp;&nbsp;&nbsp;&nbsp;#}<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#第二个虚拟主机配置<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;# another virtual host using mix of IP-, name-, and port-based configuration<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#server {<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    listen       8000;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#    listen       somename:8080;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#    server_name  somename  alias  another.alias;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    location / {<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#        root   html;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#        index  index.html index.htm;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    }<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#}<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#HTTPS虚拟主机定义<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;# HTTPS server<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#server {<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    listen       443 ssl;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    server_name  localhost;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    ssl_certificate      cert.pem;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    ssl_certificate_key  cert.key;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    ssl_session_cache    shared:SSL:1m;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    ssl_session_timeout  5m;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    ssl_ciphers  HIGH:!aNULL:!MD5;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    ssl_prefer_server_ciphers  on;<br>
-					    
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    location / {<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#        root   html;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#        index  index.html index.htm;<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#    }<br>
-					        &nbsp;&nbsp;&nbsp;&nbsp;#}<br>
-					        &nbsp;&nbsp;&nbsp;include servers/*;<br>
-					    &nbsp;&nbsp;&nbsp;&nbsp;}
+					<xmp>	
+#Nginx的worker进程运行用户以及用户组
+#user  nobody;
+#Nginx开启的进程数
+worker_processes  1;
+#定义全局错误日志定义类型，[debug|info|notice|warn|crit]
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info；
+#指定进程ID存储文件位置
+#pid      logs/nginx.pid;
+#事件配置
+events {
+	#use [ kqueue | rtsig | epoll | /dev/poll | select | poll ];
+	#epoll模型是Linux内核中的高性能网络I/O模型，如果在mac上面，就用kqueue模型。
+	use kqueue;
+	#每个进程可以处理的最大连接数，理论上每台nginx服务器的最大连接数为worker_processes*worker_connections。
+	worker_connections  1024;
+	}
+}
+				</xmp>		
 				</strong>			
 				</p><br><br><br>
 				<span style="font-size: 20px;">3.反向代理配置:</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>
-						&nbsp;&nbsp;&nbsp;&nbsp;server {<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#监听80端口<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listen 80;<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server_name localhost;<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# individual nginx logs for this web vhost<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;access_log /tmp/access.log;<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error_log  /tmp/error.log ;<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location / {<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#负载均衡<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#轮询 <br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#proxy_pass http://polling_strategy;<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#weight权重<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#proxy_pass http://weight_strategy;<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#ip_hash<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# proxy_pass http://ip_hash_strategy;<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#fair<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# proxy_pass http://fair_strategy;<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#url_hash<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# proxy_pass http://url_hash_strategy;<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#重定向<br />
-						            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#rewrite ^ http://localhost:8080;<br />
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
-						    &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+						<xmp>
+server {
+	#监听80端口
+	listen 80;
+	server_name localhost;
+	# individual nginx logs for this web vhost
+	access_log /tmp/access.log;
+	error_log  /tmp/error.log ;
+	location / {
+		#负载均衡
+		#轮询 
+		#proxy_pass http://polling_strategy;
+		#weight权重
+		#proxy_pass http://weight_strategy;
+		#ip_hash
+		# proxy_pass http://ip_hash_strategy;
+		#fair
+		# proxy_pass http://fair_strategy;
+		#url_hash
+		# proxy_pass http://url_hash_strategy;
+		#重定向
+		#rewrite ^ http://localhost:8080;
+	}
+}
+						</xmp>
 					</strong>
 				</p><br>
 				
@@ -266,17 +177,19 @@
 				
 				<p style="font-size: 19px;">
 					<strong>
-						&nbsp;&nbsp;&nbsp;&nbsp;server {<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#监听80端口<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listen 80;<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server_name localhost;<br>
-							 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# individual nginx logs for this web vhost<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;access_log /tmp/access.log;<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error_log  /tmp/error.log ;<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location / {<br>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proxy_pass http://www.baidu.com;<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-						&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+					<xmp>	
+server {
+	#监听80端口
+	listen 80;
+	server_name localhost;
+	 # individual nginx logs for this web vhost
+	access_log /tmp/access.log;
+	error_log  /tmp/error.log ;
+	location / {
+		proxy_pass http://www.baidu.com;
+	}
+} 
+					</xmp>	
 					</strong>
 				</p><br>
 				
@@ -284,12 +197,14 @@
 				
 				<p style="font-size: 19px;">
 					<strong>
-						&nbsp;&nbsp;&nbsp;&nbsp;# 1、轮询（默认）<br>
-						    &nbsp;&nbsp;&nbsp;&nbsp;# 每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。 <br>
-						    &nbsp;&nbsp;&nbsp;&nbsp;upstream polling_strategy { <br>
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server glmapper.net:8080; # 应用服务器1<br>
-						        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server glmapper.net:8081; # 应用服务器2<br>
-						    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+					<xmp>	
+# 1、轮询（默认）
+# 每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。 
+upstream polling_strategy { 
+	server glmapper.net:8080; # 应用服务器1
+	server glmapper.net:8081; # 应用服务器2
+}
+					</xmp>		
 					</strong>
 				</p><br>
 				
@@ -297,15 +212,35 @@
 				
 				<p style="font-size: 19px;">
 					<strong>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#2、指定权重<br>
-						&nbsp;&nbsp;&nbsp;&nbsp;#指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。 <br>
-						&nbsp;&nbsp;&nbsp;&nbsp;upstream  weight_strategy { <br>
-						    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server glmapper.net:8080 weight=1; # 应用服务器1<br>
-						    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server glmapper.net:8081 weight=9; # 应用服务器2<br>
-						&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-						&nbsp;&nbsp;&nbsp;&nbsp;测试结果：总访问次数15次，根据上面的权重配置，两台机器的访问比重：2：13；满足预期！<br>
+					<xmp>	
+#2、指定权重
+#指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。 
+upstream  weight_strategy { 
+	server glmapper.net:8080 weight=1; # 应用服务器1
+	server glmapper.net:8081 weight=9; # 应用服务器2
+}
+测试结果：总访问次数15次，根据上面的权重配置，两台机器的访问比重：2：13；满足预期！
+					</xmp>
 					</strong>
 				</p><br>
+				
+				<span style="font-size: 20px;">7.其他负载均衡策略，<br>这里因为需要安装三方插件，时间有限就不验证了，知悉即可！:</span><hr>
+				
+				<p style="font-size: 19px;">
+					<strong>
+<xmp>
+#fair（第三方）
+#按后端服务器的响应时间来分配请求，响应时间短的优先分配。 
+upstream fair_strategy { 
+	server glmapper.net:8080; # 应用服务器1
+	server glmapper.net:8081; # 应用服务器2
+	fair; 
+} 
+</xmp>
+						</strong>
+				</p><br>
+				
+				
 			</div>
 	    </div>
 	</div>
