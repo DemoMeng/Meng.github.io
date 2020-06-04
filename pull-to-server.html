@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>项目部署</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/fontAwesome.css">
+        <link rel="stylesheet" href="css/hero-slider.css">
+        <link rel="stylesheet" href="css/owl-carousel.css">
+        <link rel="stylesheet" href="css/datepicker.css">
+        <link rel="stylesheet" href="css/tooplate-style.css">
+		<link rel="stylesheet" href="css/my-common.css" />
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+        <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    </head>
+<body>
+    <div class="wrap">
+        <header id="header">
+            <div class="container-fluid">
+                <div class="col-md-12">
+                    <button id="primary-nav-button" type="button">Menu</button>
+                    <!-- <div class="logo">
+                        <a href="index.html">
+							<img style="width: 35px;height: 35px" src="img/logo.png" alt="Brunch Template">
+						</a>
+					</div> -->
+                    <nav id="primary-nav" class="dropdown cf" style="background-color: #517DF0;">
+                        <ul class="dropdown menu">
+                            <li class='active'><a href="index.html">主页</a></li>
+                            <li><a href="blogs.html">杂文</a>
+                                <!--<ul class="sub-menu">
+                                    <li><a href="generic-page.html">刚出</a></li>
+                                    <li><a href="generic-page.html">2019上榜</a></li>
+                                    <li><a href="generic-page.html">推荐</a></li>
+                                </ul>-->
+                            </li>
+                            <li><a href="me.html">联系我</a></li><!-- 
+                            <li><a href="helloworld.html">HelloWorld</a></li>
+                            <li><a href="generic-page.html">随便写</a></li> -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+    </div>
+    <br><br><br><br>
+	
+	<div class="contact-intro">
+	    <div class="container">
+	        <div class="col-md-12">
+	            <h1 class="hidden-lg hidden-md">项目部署</h1>
+				<h1 class="hidden-sm hidden-xs">项目部署</h1>
+				
+				<br><span style="font-size: 20px;color: #517DF0;">1.MAC环境下的项目发布和部署</span><hr>
+				
+				<p style="font-size: 19px;">
+					<strong>a.作用：</strong>
+				</p><br>
+				<p style="font-size: 19px;">
+					<strong>
+					 <xmp>
+	比如有一个工程，里面全部都是工具类，如果想要在别的工程使用到这些工具类，那么需要把这个工程打成jar包，
+		 如果是本地使用，就把jar推送到maven本地仓库。
+		 如果是联网使用，就把jar推送到maven的中央仓库。
+					 </xmp>
+					 </strong>
+				</p>
+				
+				<p style="font-size: 19px;">
+					<strong>b.推送到本地仓库步骤：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					 <strong>
+					 <xmp>
+	b.1:首先把写的工具类工程进行maven编译，编译通过后打包（执行clean-install 打成jar包）。位于项目target下 （命令：mvn clean install -Dskiptests=true）
+	b.2:执行如下命令，把打包好的jar推送到maven本地仓库
+		 mvn install:install-file "-Dfile=/Applications/mqz/sdk-operator/target/sdk-operator-1.1.1.jar" "-DgroupId=cn.com.sdk" "-DartifactId=sdk-operator" "-Dversion=1.1.1" "-Dpackaging=jar"
+
+		 ***解释***
+		 -Dfile : 相对路径
+		 -DgroupId : jar的groupId在pom.xml有
+		 -DartifactId : jar的artifactId在pom.xml有
+		 -Dversion : jar的版本号在pom.xml有
+		 -Dpackaging : jar的打包方式在pom.xml有
+
+		 ***其他参数***
+		 -DpomFile=your-pom.xml
+		 -Dsources=src.jar
+		 -Djavadoc=apidocs.jar
+		 -Dclassifier=sources
+		 -DgeneratePom=true
+		 -DcreateChecksum=true
+					 </xmp>
+					 </strong>
+				</p>
+				
+				<p style="font-size: 19px;">
+					<strong>c.Mac把本地的文件或者jar包上传到服务器：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					 <xmp>
+	使用 scp -r 命令，具体如下：
+	也就是：scp -r 本地文件（jar）路径 用户@服务器ip：服务器路径
+	
+	mv 移动 重新命名
+	
+	1.mvn clean install -DskipTests=true  -----跳过测试打包项目，生成的jar位于当前项目的target下
+	2.把jar上传到服务器
+	    scp work-service.jar root@www.xxx.com：~  ----->放在服务器的 ~ 目录下，随后输入密码
+	3.登录服务器：ssh root@www.xxx.com --->随后输入密码
+	4.登录服务器之后，把上传的jar包替换掉 aetxt.0.jar (首先要备份一下这个jar)
+	    mv aetxt.0.jar 备份1.jar
+	    mv work-service.jar aetxt.0.jar (替换旧的jar)
+	5.重启jar —  ./startup.sh
+					</xmp>
+					</strong>
+				</p>
+				
+				
+				<p style="font-size: 19px;">
+					<strong>c.最后：</strong>
+				</p>
+				
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>
+	如果是新项目的话，需要配置Nginx做一个反向代理（域名访问，前后端分离的项目）				
+					</xmp> 
+					<a style="color: #517DF0;" href="nginx-detail.html">nginx配置</a>
+					</strong>
+				</p>
+				
+				
+				
+				
+				
+			</div>
+	    </div>
+	</div>
+
+	<br><br><br><br>
+
+    <div class="sub-footer" style="background-color: white;">
+        <div class="container">
+                <p style="color: #000000;"><b>Nothing be possible<br/> Design By:</b> 
+					<a style="color: #517DF0;" rel="nofollow" href="https://demomeng.github.io/"><b>蒙大拿</b></a>
+				</p>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+    <script src="js/vendor/bootstrap.min.js"></script>
+    
+    <script src="js/datepicker.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+
+<!--    <script>-->
+<!--        var script = document.createElement('script');-->
+<!--        script.type = 'text/javascript';-->
+<!--        // 传参一个回调函数名给后端，方便后端返回时执行这个在前端定义的回调函数-->
+<!--        script.src = 'http://localhost:4444/mqz/login/login?userName=mengqizhang&password=meng0304&isRemember=false';-->
+<!--        document.head.appendChild(script);-->
+<!--        // 回调执行函数-->
+<!--        function handleCallback(res) {-->
+<!--            console.log(res);-->
+<!--            //alert(JSON.stringify(res));-->
+<!--        }-->
+<!--    </script>-->
+
+    <script>
+        $(function(){
+
+            // var url = "http://localhost:4444/mqz/login/login?callback=?&userName=mengqizhang&password=meng0304&isRemember=false";
+            // $.ajax({
+            //     type:'GET',
+            //     url : url,
+            //     jsonpCallback: 'jsonCallback',
+            //     contentType: "application/json",
+            //     dataType:"jsonp",
+            //     success:function(json){
+            //         console.log(json);
+            //         //alert(json);
+            //     }
+            // });
+
+            // function handleCallback(res) {
+            //     alert(JSON.stringify(res));
+            // }
+            //
+            // $.ajax({
+            //     url: 'http://localhost:4444/mqz/login/login',
+            //     type: 'get',
+            //     data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+            //     dataType: 'jsonp',  // 请求方式为jsonp
+            //     jsonpCallback: "handleCallback",    // 自定义回调函数名
+            // });
+
+
+
+            //用户登录
+            // $("#login-btn").click(function () {
+            //     $.ajax({
+            //         type: "POST",
+            //         url: "http://localhost:4444/mqz/login/login",
+            //         data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+            //         dataType: "json",
+            //         success: function(data){
+            //             console.log(data);
+            //         }
+            //     });
+            // });
+            // return null;
+            //获取数据
+            // $('#load-data-btn').click(function(){
+            //     $.ajax({
+            //         type: "GET",
+            //         url: "http://localhost:4444/mqz/goods/goods/page",
+            //         data: {size:10, current:1},
+            //         dataType: "json",
+            //         success: function(data){
+            //             console.log(data);
+            //             // $('#resText').empty();   //清空resText里面的所有内容
+            //             // var html = '';
+            //             // $.each(data, function(commentIndex, comment){
+            //             //     html += '<div class="comment"><h6>' + comment['username']
+            //             //         + ':</h6><p class="para"' + comment['content']
+            //             //         + '</p></div>';
+            //             // });
+            //             // $('#resText').html(html);
+            //         }
+            //     });
+            // });
+        });
+    </script>
+
+</body>
+</html>
