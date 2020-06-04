@@ -19,6 +19,15 @@
         <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900" rel="stylesheet">
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
     </head>
+<style>
+	.footer{
+	  height: 50px;
+	  width: 100%;
+	  background:white;
+	  color:white;
+	  text-align: center;
+	}
+</style>
 <body>
     <div class="wrap">
         <header id="header">
@@ -625,14 +634,14 @@ public enum CommonStatus {
 	</div>
 
 	<br><br><br><br>
-	<hr style="height:1px;border:none;border-top:2px solid #e1e3e8;" />
     <div class="sub-footer" style="background-color: white;">
         <div class="container">
-                <p style="color: #000000;">Nothing be possible<br/> Design By: 
+                <p style="color: #000000;"><b>Nothing be possible<br/> Design By: </b>
     				<a style="color: #517DF0;" rel="nofollow" href="https://demomeng.github.io/"><b>蒙大拿</b></a>
     			</p>
         </div>
     </div>
+	
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
@@ -657,7 +666,40 @@ public enum CommonStatus {
 <!--    </script>-->
 
     <script>
-        $(function(){
+		
+		$(document).ready(function(){
+		function t(){
+			var e = $(".footer");//获取页脚div的对象
+			var h = e.offset().top + e.height() ;//获取页脚偏移量加页脚高度的值
+			//判断页脚div底部到页面顶端的实际距离是否小于页面可见区域高度
+			if(h < document.body.clientHeight){
+			//当页面刚好可以包容所有内容不需要下拉时直接加上个定位就是了，当然这里也可以用绝对和相对属性
+			//具体设置根据你实际情况来定吧
+			  $(".footer").css({position:"fixed",left:"1%",bottom:"20px"});
+			  return;
+			}
+		
+			function t2(){
+			  var a = $(document).scrollTop()+document.documentElement.clientHeight;//获取页面滑动偏移量加页面可见区域的高度
+			//判断页脚div底部到页面顶端的实际距离是否小于页面滑动偏移量加页面可见区域高度
+			if(a >= h){
+			//如果页面内容太多，需要下滑展示的时候，给页脚一个固定定位属性
+			$(".footer").css({position:"fixed",left:"1%",bottom:"20px"});
+			}else{
+			//当页面重新上滑页脚需要被隐藏的时候移除它的定位属性，这样不论何时，它肯定是被页面撑起来固定到底部展示的。
+			 $(".footer").removeAttr("style");
+			}
+			}
+			t2();
+			//在页面大小改变时触发方法t2
+			 $(document).resize(t2);
+			 //在页面滑动时触发方法t2
+			 $(document).scroll(t2);
+		}
+		//直接运行方法t
+			t();
+		});
+        //$(function(){
 
             // var url = "http://localhost:4444/mqz/login/login?callback=?&userName=mengqizhang&password=meng0304&isRemember=false";
             // $.ajax({
@@ -719,7 +761,7 @@ public enum CommonStatus {
             //         }
             //     });
             // });
-        });
+        //});
     </script>
 
 </body>

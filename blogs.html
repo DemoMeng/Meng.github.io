@@ -25,8 +25,15 @@
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
 	<script src="https://cdn.bootcss.com/markdown.js/0.5.0/markdown.min.js"></script>
 	<script src="http://cdn.bootcss.com/bootstrap/3.3.1/css/bootstrap.min.css"></script>
-	
-
+<style>
+.footer{
+  height: 50px;
+  width: 100%;
+  background:white;
+  color:white;
+  text-align: center;
+}
+</style>
 </head>
 <!--
 Tooplate 2112 Brunch
@@ -125,7 +132,7 @@ https://www.tooplate.com/view/2112-brunch
 </div>
 
 
-<div class="accordions">
+<!-- <div class="accordions">
         <div class="container">
             <div class="col-md-12">
                 <ul class="accordion">
@@ -166,21 +173,27 @@ https://www.tooplate.com/view/2112-brunch
                 </ul>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
 
-
+<!-- 
 <footer>
    
 </footer>
 <div class="sub-footer" style="background-color: white;">
 	<div class="container">
-			<p style="color: #000000;">Nothing be possible<br/> Design By: 
-				<a style="color: #000000;" rel="nofollow" href="https://demomeng.github.io/">蒙大拿</a>
+			<p style="color: #000000;"><b>Nothing be possible<br/> Design By: </b>
+				<a style="color:#517DF0;" rel="nofollow" href="https://demomeng.github.io/">蒙大拿</a>
 			</p>
 	</div>
-</div>
+</div> -->
+
+<div class='footer'><span style="line-height: 1px;">
+	<p style="color: #000000;"><b>Nothing be possible<br/> Design By:</b>
+		<a style="color: #517DF0;" rel="nofollow" href="https://demomeng.github.io/"><b>蒙大拿</b></a>
+	</p>
+	</span></div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
@@ -197,6 +210,39 @@ https://www.tooplate.com/view/2112-brunch
 		location.href = "blogs/helloworld.html";
 	}
 
+
+$(document).ready(function(){
+		function t(){
+			var e = $(".footer");//获取页脚div的对象
+			var h = e.offset().top + e.height() ;//获取页脚偏移量加页脚高度的值
+			//判断页脚div底部到页面顶端的实际距离是否小于页面可见区域高度
+			if(h < document.body.clientHeight){
+			//当页面刚好可以包容所有内容不需要下拉时直接加上个定位就是了，当然这里也可以用绝对和相对属性
+			//具体设置根据你实际情况来定吧
+			  $(".footer").css({position:"fixed",left:"1%",bottom:"20px"});
+			  return;
+			}
+		
+			function t2(){
+			  var a = $(document).scrollTop()+document.documentElement.clientHeight;//获取页面滑动偏移量加页面可见区域的高度
+			//判断页脚div底部到页面顶端的实际距离是否小于页面滑动偏移量加页面可见区域高度
+			if(a >= h){
+			//如果页面内容太多，需要下滑展示的时候，给页脚一个固定定位属性
+			$(".footer").css({position:"fixed",left:"1%",bottom:"20px"});
+			}else{
+			//当页面重新上滑页脚需要被隐藏的时候移除它的定位属性，这样不论何时，它肯定是被页面撑起来固定到底部展示的。
+			 $(".footer").removeAttr("style");
+			}
+			}
+			t2();
+			//在页面大小改变时触发方法t2
+			 $(document).resize(t2);
+			 //在页面滑动时触发方法t2
+			 $(document).scroll(t2);
+		}
+		//直接运行方法t
+			t();
+});
 	
 </script>
 
