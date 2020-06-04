@@ -1,0 +1,726 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>关于接口安全性的设计</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/fontAwesome.css">
+        <link rel="stylesheet" href="css/hero-slider.css">
+        <link rel="stylesheet" href="css/owl-carousel.css">
+        <link rel="stylesheet" href="css/datepicker.css">
+        <link rel="stylesheet" href="css/tooplate-style.css">
+		<link rel="stylesheet" href="css/my-common.css" />
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+        <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    </head>
+<body>
+    <div class="wrap">
+        <header id="header">
+            <div class="container-fluid">
+                <div class="col-md-12">
+                    <button id="primary-nav-button" type="button">Menu</button>
+                    <!-- <div class="logo">
+                        <a href="index.html">
+							<img style="width: 35px;height: 35px" src="img/logo.png" alt="Brunch Template">
+						</a>
+					</div> -->
+                    <nav id="primary-nav" class="dropdown cf" style="background-color: #517DF0;">
+                        <ul class="dropdown menu">
+                            <li class='active'><a href="index.html">主页</a></li>
+                            <li><a href="blogs.html">杂文</a>
+                                <!--<ul class="sub-menu">
+                                    <li><a href="generic-page.html">刚出</a></li>
+                                    <li><a href="generic-page.html">2019上榜</a></li>
+                                    <li><a href="generic-page.html">推荐</a></li>
+                                </ul>-->
+                            </li>
+                            <li><a href="me.html">联系我</a></li><!-- 
+                            <li><a href="helloworld.html">HelloWorld</a></li>
+                            <li><a href="generic-page.html">随便写</a></li> -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+    </div>
+    <br><br><br><br>
+	
+	<div class="contact-intro">
+	    <div class="container">
+	        <div class="col-md-12">
+	            <h1 class="hidden-lg hidden-md">关于接口安全性的设计</h1>
+				<h1 class="hidden-sm hidden-xs">关于接口安全性的设计</h1>
+				
+				<br><span style="font-size: 20px;color: #517DF0;">1.接口的幂等性？</span><hr>
+				
+				<p style="font-size: 19px;">
+					<strong>a.是什么：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					 <xmp>
+	一个或者多个请求某个资源，对于资源本身应该具有相同的结果（除了网络超时之外）。
+	也就是：
+	任意多次的执行所产生的影响和一次执行的影响必须相同  ---->  对于数据库来说只能有一次的操作，并不能重复处理。
+	不仅仅：
+		（1）：幂等性不仅是一次，而且还是多次对资源请求没有副作用。
+		（2）：幂等性表示第一次请求的时候对资源产生了副作用，但是之后的多次都不会产生副作用。
+		（3）：幂等性关注的是以后的请求是否对资源产生副作用，而不是关注结果。
+		（4）：网络超时等相关问题，并不是幂等性考虑的因素。
+					 </xmp>
+					</strong> 
+				</p>
+				
+				<p style="font-size: 19px;">
+					<strong>
+						b.使用场景：
+					</strong>
+				</p><br>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>
+	（1）：连续多次提交订单，后台只会有一个订单！
+	（2）：支付结果！多次发起支付，最终只有一个结果。
+					</xmp>		
+					</strong>			
+				</p>
+				<p style="font-size: 19px;">
+					<strong>c.解决策略:</strong>
+				</p>
+				
+				<p style="font-size: 19px;">
+					<strong>
+						<xmp>
+	（1）：使用唯一的单号，根据单号查询状态（类似token）
+	（2）：数据库建立唯一索引，使该数据只有一条。
+	（3）：悲观锁或者乐观锁。
+						</xmp>
+					</strong>
+				</p><br>
+				
+				<span style="font-size: 20px;color: #517DF0;">2.防止重复提交策略:</span><hr>
+				
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+	（1）：乐观锁 
+			update article set 
+				value = newValue,
+				version =  versionValue + 1
+			where version = #{versionValue} and id = #{id};
+	（2）：防重表：
+	（3）：分布式锁：
+			乐观锁，redis分布式锁，zookeeper分布式锁
+	（4）：token令牌：
+	（5）：支付缓冲区
+					</xmp>	
+					</strong>
+				</p>
+				
+				<span style="font-size: 20px;color: #517DF0;">3.使用token机制实现接口幂等性:</span><hr>
+				<p style="font-size: 19px;">
+					<strong>a.思路：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+	（1）：客户端请求token服务获取token，这个token服务也加入接口防刷的限制
+	（2）：客户端发起请求，随带token到后台验证合法性
+	（3）：token有效 --> 进行业务逻辑操作，并且清空缓存中的token留底
+	（4）：token无效 --> 返回客户端提示消息
+					</xmp>	
+					</strong>
+				</p>
+				
+				<p style="font-size: 19px;">
+					<strong>（1）.application.properties：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+	server.port=1234
+	spring.redis.database=0  
+	spring.redis.host=127.0.0.1
+	spring.redis.port=6379  
+	spring.redis.password=root
+	spring.redis.jedis.pool.max-active=200
+	spring.redis.jedis.pool.max-wait=-1ms
+	spring.redis.jedis.pool.max-idle=10 
+	spring.redis.jedis.pool.min-idle=0  
+	spring.redis.timeout=10000s	
+					</xmp>	
+					</strong>
+				</p>
+				
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>（2）.redis配置及访问类：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+	import org.springframework.context.annotation.Bean;
+	import org.springframework.context.annotation.Configuration;
+	import org.springframework.data.redis.connection.RedisConnectionFactory;
+	import org.springframework.data.redis.core.RedisTemplate;
+	import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+	import org.springframework.data.redis.serializer.StringRedisSerializer;
+	@Configuration
+	public class RedisConfig {
+		/**
+		 * 重写Redis序列化方式，使用Json方式:
+		 * Spring Data JPA为我们提供了下面的Serializer：
+		 * 在此我们将自己配置RedisTemplate并定义Serializer。     *
+		 * @param redisConnectionFactory
+		 * @return
+		 */
+		@Bean
+		public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+			RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+			redisTemplate.setConnectionFactory(redisConnectionFactory);
+			GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+			// 设置值（value）的序列化采用FastJsonRedisSerializer。
+			redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
+			// 设置键（key）的序列化采用StringRedisSerializer。
+			redisTemplate.setKeySerializer(new StringRedisSerializer());
+			redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+			redisTemplate.afterPropertiesSet();
+			return redisTemplate;
+		}
+	}
+					</xmp>	
+					</strong>
+				</p>
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>
+					<xmp>	
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.data.redis.core.RedisTemplate;
+	import org.springframework.stereotype.Component;
+	import org.springframework.util.CollectionUtils;
+	import java.util.List;
+	import java.util.Map;
+	import java.util.Set;
+	import java.util.concurrent.TimeUnit;
+	@Component
+	public class RedisUtils {
+		@Autowired
+		private RedisTemplate<String, Object> redisTemplate;
+		
+		/**
+		 * 指定缓存失效时间
+		 * @param key 键
+		 * @param time 时间(秒)
+		 * @return
+		 */
+		public boolean expire(String key,long time){
+			try {
+				if(time>0){
+					redisTemplate.expire(key, time, TimeUnit.SECONDS);
+				}
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		/**
+		 * 删除缓存
+		 * @param key 可以传一个值 或多个
+		 */
+		@SuppressWarnings("unchecked")
+		public void del(String ... key){
+			if(key!=null&&key.length>0){
+				if(key.length==1){
+					redisTemplate.delete(key[0]);
+				}else{
+					redisTemplate.delete(CollectionUtils.arrayToList(key));
+				}
+			}
+		}
+		
+		/**
+		 * 普通缓存获取
+		 * @param key 键
+		 * @return 值
+		 */
+		public Object get(String key){
+			return key==null?null:redisTemplate.opsForValue().get(key);
+		}
+	
+		/**
+		 * 普通缓存放入
+		 * @param key 键
+		 * @param value 值
+		 * @return true成功 false失败
+		 */
+		public boolean set(String key,Object value) {
+			try {
+				redisTemplate.opsForValue().set(key, value);
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+	
+		}
+	
+		/**
+		 * 普通缓存放入并设置时间
+		 * @param key 键
+		 * @param value 值
+		 * @param time 时间(秒) time要大于0 如果time小于等于0 将设置无限期
+		 * @return true成功 false 失败
+		 */
+		public boolean set(String key,Object value,long time){
+			try {
+				if(time>0){
+					redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+				}else{
+					set(key, value);
+				}
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
+					</xmp>	
+					</strong>
+				</p>
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>（3）.关于token相关的业务处理：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+import com.common.CommonStatus;
+import com.common.ResponseInfo;
+import com.redis.RedisUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
+@Service
+public class TokenServiceImpl implements TokenService {
+    /**
+     * token值
+     */
+    public final static String TOKEN_KEY = "TOKEN_KEY";
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    /**
+     * 生成token，identity可以结合登录用户使用，此处只是模拟登录情况
+     * @param identity
+     * @return
+     */
+    @Override
+    public ResponseInfo createToken(String identity) {
+        if(StringUtils.isEmpty(identity)){
+            return ResponseInfo.ERROR(CommonStatus.ERROR_PARAM.getMsg());/**此处应该做一个全局自定义异常，直接返回异常即可，下期会做关于统一异常和返回数据的详细实例*/
+        }
+        //生成token
+        String tokenValue = UUID.randomUUID().toString().replace("-","");
+        String tokenKey = TOKEN_KEY+"_"+identity;
+        String value = (String) redisUtils.get(tokenKey);
+        if(!StringUtils.isEmpty(value)){
+            return ResponseInfo.SUCCESS(value);
+        }
+        boolean flag = redisUtils.set(tokenKey,tokenValue,600);
+        if(!flag){
+            return ResponseInfo.ERROR_DIY(CommonStatus.ERROR_REDIS.getCode(), CommonStatus.ERROR_REDIS.getMsg(),null);
+        }
+        return ResponseInfo.SUCCESS(tokenValue);
+    }
+
+    /**
+     * 验证token，此处token可以是传参的方式或者是请求头传
+     * @param token
+     * @return
+     */
+    @Override
+    public ResponseInfo checkToken(HttpServletRequest request,String token,String identity) {
+        String value = StringUtils.isEmpty(request.getHeader("token_key"))?request.getParameter("token"):request.getHeader("token_key");
+        if(StringUtils.isEmpty(value)){
+            return ResponseInfo.ERROR_DIY(CommonStatus.ERROR_PARAM.getCode(),CommonStatus.ERROR_PARAM.getMsg(),null);
+        }
+        if(StringUtils.isEmpty(identity)){
+            return ResponseInfo.ERROR_DIY(CommonStatus.ERROR_PARAM.getCode(),CommonStatus.ERROR_PARAM.getMsg(),null);
+        }
+        String key = TOKEN_KEY+"_"+identity;
+        String tokenValue = (String) redisUtils.get(key);
+        if(StringUtils.isEmpty(tokenValue)){
+            return ResponseInfo.ERROR_DIY(CommonStatus.ERROR_NOT_TOKEN.getCode(),CommonStatus.ERROR_NOT_TOKEN.getMsg(),null);
+        }
+        if(!tokenValue.equals(value)){
+            return ResponseInfo.ERROR_DIY(CommonStatus.ERROR_TOKEN.getCode(),CommonStatus.ERROR_TOKEN.getMsg(),null);
+        }
+        /**
+         *  接下来做相关逻辑的处理
+         *  处理完成之后，删除redis中的token
+         */
+        redisUtils.del(key);
+        return ResponseInfo.SUCCESS(null);
+    }
+}
+					</xmp>	
+					</strong>
+				</p>
+				
+				
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>（4）.返回实体，通用状态实体：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+@Data
+@Accessors(chain = true)
+public class ResponseInfo {
+    private static ResponseInfo responseInfo;
+    private Integer code;
+    private String msg;
+    private Object content;
+    private ResponseInfo(){
+    }
+    /**
+     * 默认实例
+     * @return
+     */
+    public static ResponseInfo INSTANCE(){
+        if(responseInfo == null){
+            responseInfo = new ResponseInfo();
+        }
+        responseInfo.setCode(CommonStatus.SUCCESS.getCode());
+        responseInfo.setMsg(CommonStatus.SUCCESS.getMsg());
+        return responseInfo;
+    }
+    /**
+     * 成功
+     * @param content
+     * @return
+     */
+    public static ResponseInfo SUCCESS(Object content){
+        if(responseInfo == null){
+            responseInfo = new ResponseInfo();
+        }
+        responseInfo.setCode(CommonStatus.SUCCESS.getCode());
+        responseInfo.setMsg(CommonStatus.SUCCESS.getMsg());
+        responseInfo.setContent(content);
+        return responseInfo;
+    }
+    /**
+     * 失败
+     * @param content
+     * @return
+     */
+    public static ResponseInfo ERROR(Object content){
+        if(responseInfo == null){
+            responseInfo = new ResponseInfo();
+        }
+        responseInfo.setCode(CommonStatus.ERROR.getCode());
+        responseInfo.setMsg(CommonStatus.ERROR.getMsg());
+        responseInfo.setContent(content);
+        return responseInfo;
+    }
+    /**
+     * 失败
+     * @param content
+     * @return
+     */
+    public static ResponseInfo ERROR_DIY(Integer code,String msg,Object content){
+        if(responseInfo == null){
+            responseInfo = new ResponseInfo();
+        }
+        responseInfo.setCode(code);
+        responseInfo.setMsg(msg);
+        responseInfo.setContent(content);
+        return responseInfo;
+    }
+}
+
+
+********************************************************************************
+
+public enum CommonStatus {
+
+    SUCCESS(200,"处理成功"),
+    ERROR(500,"发生异常"),
+    ERROR_PARAM(500,"参数错误"),
+    ERROR_REDIS(500,"REDIS错误"),
+    ERROR_NOT_TOKEN(500,"token为空"),
+    ERROR_TOKEN(500,"token验证失败"),
+    ERROR_NOT_FOUND(404,"预期结果未找到"),
+    ERROR_NO_PERMISSION(403,"未有该权限"),
+    ERROR_METHOD(405,"请求方法出错");
+
+    private Integer code;
+    private String msg;
+
+    CommonStatus(Integer code, String msg){
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+}
+					</xmp>	
+					</strong>
+				</p>
+				
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>（5）.自定义拦截器，过滤所有请求：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>	
+	@Configuration
+	public class MyAccessInterceptor implements HandlerInterceptor {
+		@Autowired
+		private RedisUtils redisUtils;
+		/**
+		 * token过滤
+		 * */
+		@Override
+		public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+			if(handler instanceof HandlerMethod){
+				if(null != ((HandlerMethod) handler).getMethodAnnotation(Tokens.class)){
+					String value = request.getHeader("token_key");
+					if(StringUtils.isEmpty(value)){
+						returnJson(response,"{\"code\":400,\"msg\":\"token为空\"}");
+						return false;
+					}
+					String key = request.getParameter("identity");
+					String tokenKey = "TOKEN_KEY_"+key;
+					String tokenValue = (String) redisUtils.get(tokenKey);
+					if(!value.equals(tokenValue)){
+						returnJson(response,"{\"code\":400,\"msg\":\"token不正确\"}");
+						return false;
+					}
+					return true;
+				}
+				return true;
+			}
+			return true;
+		}
+		private void returnJson(HttpServletResponse response, String json){
+			PrintWriter writer = null;
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/html; charset=utf-8");
+			try {
+				writer = response.getWriter();
+				writer.print(json);
+
+			} catch (IOException e) {
+			} finally {
+				if (writer != null)
+					writer.close();
+			}
+		}
+	}
+	
+	********************************************************************************
+	
+	@Configuration
+	public class WebConfigurer implements WebMvcConfigurer {
+	
+	    @Bean
+	    public MyAccessInterceptor accessInterceptor() {
+	        return new MyAccessInterceptor();
+	    }
+	
+	    @Order
+	    public void addInterceptors(InterceptorRegistry registry) {
+	        registry.addInterceptor(accessInterceptor()).addPathPatterns("/**").excludePathPatterns("/doc.html");
+	
+	    }
+	}
+	
+					</xmp>	
+					</strong>
+				</p>
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>（6）.controller类：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>
+	@RestController
+	@RequestMapping("/token")
+	public class TokenController {
+		@Autowired
+		private RedisUtils redisUtils;
+		@Autowired
+		private TokenService tokenService;	
+		@PostMapping("/getToken")
+		public ResponseInfo getToken(@RequestBody GetTokenDTO dto){
+			return tokenService.createToken(dto.getIdentity());
+		}
+		@PostMapping("/checkToken")
+		public ResponseInfo checkToken(HttpServletRequest request,@RequestBody CheckTokenDTO dto){
+			System.out.println(dto.getToken()+""+dto.getIdentity());
+			return tokenService.checkToken(request,dto.getToken(),dto.getIdentity());
+		}
+		@Tokens
+		@PostMapping("/list")
+		public ResponseInfo list(HttpServletRequest request){
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("name","mengqizhang");
+			map.put("sex","man");
+			map.put("job","kill");
+			String identity = request.getParameter("identity");
+			redisUtils.del("TOKEN_KEY_"+identity);
+			return ResponseInfo.SUCCESS(map);
+		}
+	}
+				</xmp>
+					</strong>
+				</p>
+				
+				<p style="font-size: 19px;color: #517DF0;">
+					<strong>（7）.最后：</strong>
+				</p>
+				<p style="font-size: 19px;">
+					<strong>
+					<xmp>
+	1.上述的返回对象需要重新写一遍，需要使用泛型
+	2.使用全局异常拦截功能
+	3.关于pom依赖常规的均为springboot的启动依赖
+		如：redis , web , lombok , aop 等
+					</xmp>
+					</strong>
+				</p>				
+			</div>
+	    </div>
+	</div>
+
+	<br><br><br><br>
+	<hr style="height:1px;border:none;border-top:2px solid #e1e3e8;" />
+    <div class="sub-footer" style="background-color: white;">
+        <div class="container">
+                <p style="color: #000000;">Nothing be possible<br/> Design By: 
+    				<a style="color: #517DF0;" rel="nofollow" href="https://demomeng.github.io/"><b>蒙大拿</b></a>
+    			</p>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+    <script src="js/vendor/bootstrap.min.js"></script>
+    
+    <script src="js/datepicker.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+
+<!--    <script>-->
+<!--        var script = document.createElement('script');-->
+<!--        script.type = 'text/javascript';-->
+<!--        // 传参一个回调函数名给后端，方便后端返回时执行这个在前端定义的回调函数-->
+<!--        script.src = 'http://localhost:4444/mqz/login/login?userName=mengqizhang&password=meng0304&isRemember=false';-->
+<!--        document.head.appendChild(script);-->
+<!--        // 回调执行函数-->
+<!--        function handleCallback(res) {-->
+<!--            console.log(res);-->
+<!--            //alert(JSON.stringify(res));-->
+<!--        }-->
+<!--    </script>-->
+
+    <script>
+        $(function(){
+
+            // var url = "http://localhost:4444/mqz/login/login?callback=?&userName=mengqizhang&password=meng0304&isRemember=false";
+            // $.ajax({
+            //     type:'GET',
+            //     url : url,
+            //     jsonpCallback: 'jsonCallback',
+            //     contentType: "application/json",
+            //     dataType:"jsonp",
+            //     success:function(json){
+            //         console.log(json);
+            //         //alert(json);
+            //     }
+            // });
+
+            // function handleCallback(res) {
+            //     alert(JSON.stringify(res));
+            // }
+            //
+            // $.ajax({
+            //     url: 'http://localhost:4444/mqz/login/login',
+            //     type: 'get',
+            //     data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+            //     dataType: 'jsonp',  // 请求方式为jsonp
+            //     jsonpCallback: "handleCallback",    // 自定义回调函数名
+            // });
+
+
+
+            //用户登录
+            // $("#login-btn").click(function () {
+            //     $.ajax({
+            //         type: "POST",
+            //         url: "http://localhost:4444/mqz/login/login",
+            //         data: {userName:"mengqizhang", password:"meng0304",isRemember:false},
+            //         dataType: "json",
+            //         success: function(data){
+            //             console.log(data);
+            //         }
+            //     });
+            // });
+            // return null;
+            //获取数据
+            // $('#load-data-btn').click(function(){
+            //     $.ajax({
+            //         type: "GET",
+            //         url: "http://localhost:4444/mqz/goods/goods/page",
+            //         data: {size:10, current:1},
+            //         dataType: "json",
+            //         success: function(data){
+            //             console.log(data);
+            //             // $('#resText').empty();   //清空resText里面的所有内容
+            //             // var html = '';
+            //             // $.each(data, function(commentIndex, comment){
+            //             //     html += '<div class="comment"><h6>' + comment['username']
+            //             //         + ':</h6><p class="para"' + comment['content']
+            //             //         + '</p></div>';
+            //             // });
+            //             // $('#resText').html(html);
+            //         }
+            //     });
+            // });
+        });
+    </script>
+
+</body>
+</html>

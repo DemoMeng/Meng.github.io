@@ -40,7 +40,7 @@
                                     <li><a href="generic-page.html">推荐</a></li>
                                 </ul>-->
                             </li>
-                            <li><a href="#">联系我</a></li><!-- 
+                            <li><a href="me.html">联系我</a></li><!-- 
                             <li><a href="helloworld.html">HelloWorld</a></li>
                             <li><a href="generic-page.html">随便写</a></li> -->
                         </ul>
@@ -50,11 +50,6 @@
         </header>
     </div>
     <br><br><br><br>
-	<hr style="height:1px;border:none;border-top:2px solid #e1e3e8;" />
-
-
-
-
 	
 	<div class="contact-intro">
 	    <div class="container">
@@ -62,13 +57,13 @@
 	            <h1 class="hidden-lg hidden-md">Nginx之小谈</h1>
 				<h1 class="hidden-sm hidden-xs">Nginx之小谈</h1>
 				
-				<br><span style="font-size: 20px;">1.Nginx 能做什么？</span><hr>
+				<br><span style="font-size: 20px;color: #517DF0;">1.Nginx 能做什么？</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>a.反向代理：</strong>
 				</p><br>
 				<p style="font-size: 19px;">
-					; 在本地使用 www.glmapper1.com 的域名去访问www.taobao.com。那么这个时候我们就可以通过nginx去实现。
+					&nbsp;&nbsp;&nbsp;&nbsp;在本地使用 www.glmapper1.com 的域名去访问www.taobao.com。那么这个时候我们就可以通过nginx去实现。
 				</p><br>
 				
 				<p style="font-size: 19px;">
@@ -77,7 +72,7 @@
 					</strong>
 				</p><br>
 				<p style="font-size: 19px;">
-					;就是说应用部署在不同的服务器上，但是通过统一的域名进入，nginx则对请求进行分发
+					&nbsp;&nbsp;&nbsp;&nbsp;就是说应用部署在不同的服务器上，但是通过统一的域名进入，nginx则对请求进行分发
 					将请求分发到不同的服务器上去处理，这样就可以有效的减轻了单台服务器的压力。
 				</p><br>
 				<p style="font-size: 19px;">
@@ -89,14 +84,14 @@
 					</strong>
 				</p>
 				<p style="font-size: 19px;">
-					;
+					&nbsp;&nbsp;&nbsp;&nbsp;
 					同源：URL由协议、域名、端口和路径组成，如果两个URL的协议、域名和端口相同，则表示他们同源。浏览器的同源策略：浏览器的同源策略，限制了来自不同源的"document"或脚本，对当前"document"读取或设置某些属性。从一个域上加载的脚本不允许访问另外一个域的文档属性。
 					     因为nginx和tomcat不能共用同一端口,url一样，端口不同，这样就会有跨域问题。
 						
 				</p><br><br>
 				
 				
-				<span style="font-size: 20px;">1.配置文件解析</span><hr>
+				<span style="font-size: 20px;color: #517DF0;">2.配置文件解析</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>配置文件主要由四部分组成：：</strong>
@@ -119,123 +114,123 @@
 				<p style="font-size: 19px;">
 					<strong>
 					<xmp>	
-#Nginx的worker进程运行用户以及用户组
-#user  nobody;
-#Nginx开启的进程数
-worker_processes  1;
-#定义全局错误日志定义类型，[debug|info|notice|warn|crit]
-#error_log  logs/error.log;
-#error_log  logs/error.log  notice;
-#error_log  logs/error.log  info；
-#指定进程ID存储文件位置
-#pid      logs/nginx.pid;
-#事件配置
-events {
-	#use [ kqueue | rtsig | epoll | /dev/poll | select | poll ];
-	#epoll模型是Linux内核中的高性能网络I/O模型，如果在mac上面，就用kqueue模型。
-	use kqueue;
-	#每个进程可以处理的最大连接数，理论上每台nginx服务器的最大连接数为worker_processes*worker_connections。
-	worker_connections  1024;
+	#Nginx的worker进程运行用户以及用户组
+	#user  nobody;
+	#Nginx开启的进程数
+	worker_processes  1;
+	#定义全局错误日志定义类型，[debug|info|notice|warn|crit]
+	#error_log  logs/error.log;
+	#error_log  logs/error.log  notice;
+	#error_log  logs/error.log  info；
+	#指定进程ID存储文件位置
+	#pid      logs/nginx.pid;
+	#事件配置
+	events {
+		#use [ kqueue | rtsig | epoll | /dev/poll | select | poll ];
+		#epoll模型是Linux内核中的高性能网络I/O模型，如果在mac上面，就用kqueue模型。
+		use kqueue;
+		#每个进程可以处理的最大连接数，理论上每台nginx服务器的最大连接数为worker_processes*worker_connections。
+		worker_connections  1024;
+		}
 	}
-}
 				</xmp>		
 				</strong>			
 				</p><br><br><br>
-				<span style="font-size: 20px;">3.反向代理配置:</span><hr>
+				<span style="font-size: 20px;color: #517DF0;">3.反向代理配置:</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>
 						<xmp>
-server {
-	#监听80端口
-	listen 80;
-	server_name localhost;
-	# individual nginx logs for this web vhost
-	access_log /tmp/access.log;
-	error_log  /tmp/error.log ;
-	location / {
-		#负载均衡
-		#轮询 
-		#proxy_pass http://polling_strategy;
-		#weight权重
-		#proxy_pass http://weight_strategy;
-		#ip_hash
-		# proxy_pass http://ip_hash_strategy;
-		#fair
-		# proxy_pass http://fair_strategy;
-		#url_hash
-		# proxy_pass http://url_hash_strategy;
-		#重定向
-		#rewrite ^ http://localhost:8080;
+	server {
+		#监听80端口
+		listen 80;
+		server_name localhost;
+		# individual nginx logs for this web vhost
+		access_log /tmp/access.log;
+		error_log  /tmp/error.log ;
+		location / {
+			#负载均衡
+			#轮询 
+			#proxy_pass http://polling_strategy;
+			#weight权重
+			#proxy_pass http://weight_strategy;
+			#ip_hash
+			# proxy_pass http://ip_hash_strategy;
+			#fair
+			# proxy_pass http://fair_strategy;
+			#url_hash
+			# proxy_pass http://url_hash_strategy;
+			#重定向
+			#rewrite ^ http://localhost:8080;
+		}
 	}
-}
 						</xmp>
 					</strong>
 				</p><br>
 				
-				<span style="font-size: 20px;">4.负载均衡示例:</span><hr>
+				<span style="font-size: 20px;color: #517DF0;">4.负载均衡示例:</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>
 					<xmp>	
-server {
-	#监听80端口
-	listen 80;
-	server_name localhost;
-	 # individual nginx logs for this web vhost
-	access_log /tmp/access.log;
-	error_log  /tmp/error.log ;
-	location / {
-		proxy_pass http://www.baidu.com;
-	}
-} 
+	server {
+		#监听80端口
+		listen 80;
+		server_name localhost;
+		 # individual nginx logs for this web vhost
+		access_log /tmp/access.log;
+		error_log  /tmp/error.log ;
+		location / {
+			proxy_pass http://www.baidu.com;
+		}
+	} 
 					</xmp>	
 					</strong>
 				</p><br>
 				
-				<span style="font-size: 20px;">5.轮询策略:</span><hr>
+				<span style="font-size: 20px;color: #517DF0;">5.轮询策略:</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>
 					<xmp>	
-# 1、轮询（默认）
-# 每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。 
-upstream polling_strategy { 
-	server glmapper.net:8080; # 应用服务器1
-	server glmapper.net:8081; # 应用服务器2
-}
+	# 1、轮询（默认）
+	# 每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。 
+	upstream polling_strategy { 
+		server glmapper.net:8080; # 应用服务器1
+		server glmapper.net:8081; # 应用服务器2
+	}
 					</xmp>		
 					</strong>
 				</p><br>
 				
-				<span style="font-size: 20px;">6.权重策略:</span><hr>
+				<span style="font-size: 20px;color: #517DF0;">6.权重策略:</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>
 					<xmp>	
-#2、指定权重
-#指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。 
-upstream  weight_strategy { 
-	server glmapper.net:8080 weight=1; # 应用服务器1
-	server glmapper.net:8081 weight=9; # 应用服务器2
-}
-测试结果：总访问次数15次，根据上面的权重配置，两台机器的访问比重：2：13；满足预期！
+	#2、指定权重
+	#指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。 
+	upstream  weight_strategy { 
+		server glmapper.net:8080 weight=1; # 应用服务器1
+		server glmapper.net:8081 weight=9; # 应用服务器2
+	}
+	测试结果：总访问次数15次，根据上面的权重配置，两台机器的访问比重：2：13；满足预期！
 					</xmp>
 					</strong>
 				</p><br>
 				
-				<span style="font-size: 20px;">7.其他负载均衡策略，<br>这里因为需要安装三方插件，时间有限就不验证了，知悉即可！:</span><hr>
+				<span style="font-size: 20px;color: #517DF0;">7.其他负载均衡策略，<br>这里因为需要安装三方插件，时间有限就不验证了，知悉即可！:</span><hr>
 				
 				<p style="font-size: 19px;">
 					<strong>
 <xmp>
-#fair（第三方）
-#按后端服务器的响应时间来分配请求，响应时间短的优先分配。 
-upstream fair_strategy { 
-	server glmapper.net:8080; # 应用服务器1
-	server glmapper.net:8081; # 应用服务器2
-	fair; 
-} 
+	#fair（第三方）
+	#按后端服务器的响应时间来分配请求，响应时间短的优先分配。 
+	upstream fair_strategy { 
+		server glmapper.net:8080; # 应用服务器1
+		server glmapper.net:8081; # 应用服务器2
+		fair; 
+	} 
 </xmp>
 						</strong>
 				</p><br>
@@ -250,7 +245,7 @@ upstream fair_strategy {
     <div class="sub-footer" style="background-color: white;">
         <div class="container">
                 <p style="color: #000000;">Nothing be possible<br/> Design By: 
-					<a style="color: #000000;" rel="nofollow" href="https://demomeng.github.io/">蒙大拿</a>
+					<a style="color: #517DF0;" rel="nofollow" href="https://demomeng.github.io/"><b>蒙大拿</b></a>
 				</p>
         </div>
     </div>
